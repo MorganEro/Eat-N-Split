@@ -24,6 +24,7 @@ const initialFriends = [
 export default function App() {
   const [friends, setFriends] = useState(initialFriends);
   const [showAddFriend, setShowAddFriend] = useState(false);
+  const [selectedFriend, setSelectedFriend] = useState(null);
 
   function handleShowAddFriend() {
     setShowAddFriend(show => !show);
@@ -34,17 +35,45 @@ export default function App() {
     setShowAddFriend(false);
   }
 
+  function handleSelectFriend(friend) {
+    // setSelectedFriend(friend); just made the button select a friend
+    setSelectedFriend(
+      selectedFriend => (selectedFriend?.id === friend.id ? null : friend) //this version allows the same button to select and unselect the friend. it is saying that if the friend event already has a friend and the Id's match, then the friend will be unselected, if not, the friend will be selected. The ? operator is used to check if there is a selected friend. It is the same as "selectedFriend && selectedFriend.id". Called optional chaining
+    );
+    setShowAddFriend(false);
+  }
+
+  function handleSplitBill(value) {
+    setFriends(friends =>
+      friends.map(friend =>
+        friend.id === selectedFriend.id
+          ? { ...friend, balance: friend.balance + value }
+          : friend
+      )
+    );
+    setSelectedFriend(null);
+  }
+
   return (
     <div className="app">
       <div className="sidebar">
-        <FriendsList friends={friends} />
+        <FriendsList
+          friends={friends}
+          selectedFriend={selectedFriend}
+          onSelectFriend={handleSelectFriend}
+        />
         {showAddFriend && <FormAddFriend onAddFriend={handleAddFriend} />}
         <Button onClick={handleShowAddFriend}>
           {showAddFriend ? 'Close' : 'Add Friend'}
         </Button>
       </div>
 
-      <FormSplitBill />
+      {selectedFriend && (
+        <FormSplitBill
+          selectedFriend={selectedFriend}
+          onSplitBill={handleSplitBill}
+        />
+      )}
     </div>
   );
 }
@@ -59,12 +88,14 @@ function Button({ children, onClick }) {
   );
 }
 
-function FriendsList({ friends }) {
+function FriendsList({ friends, onSelectFriend, selectedFriend }) {
   return (
     <ul>
       {friends.map(friend => (
         <Friend
           friend={friend}
+          selectedFriend={selectedFriend}
+          onSelectFriend={onSelectFriend}
           key={friend.id}
         />
       ))}
@@ -72,9 +103,11 @@ function FriendsList({ friends }) {
   );
 }
 
-function Friend({ friend }) {
+function Friend({ friend, onSelectFriend, selectedFriend }) {
+  const isSelected = selectedFriend?.id === friend.id; //uses optional chaining otherwise, the onSelectFriend/handleSelectFriend function will throw an error when the selectedFriend is null
+
   return (
-    <li>
+    <li className={isSelected ? 'selected' : ''}>
       <img
         src={friend.image}
         alt={friend.name}
@@ -99,7 +132,9 @@ function Friend({ friend }) {
           You owe {friend.name} ${Math.abs(friend.balance)}
         </p>
       )}
-      <Button>Select</Button>
+      <Button onClick={() => onSelectFriend(friend)}>
+        {isSelected ? 'Close' : 'Select'}
+      </Button>
     </li>
   );
 }
@@ -152,37 +187,110 @@ function FormAddFriend({ onAddFriend }) {
   );
 }
 
-function FormSplitBill() {
+function InputField({ label, value, onChange, error, id, disabled = false }) {
   return (
-    <form className="form-split-bill">
-      <h2> Split a bill with X </h2>
+    <>
+      <label htmlFor={id}>{label}</label>
+      <div className="input-wrapper">
+        <span className="dollar-sign">$</span>
+        <input
+          className="dollar-input"
+          value={value}
+          onChange={onChange}
+          id={id}
+          type="text"
+          disabled={disabled}
+          aria-label={label}
+          aria-invalid={!!error}
+        />
+      </div>
+      {error && <div className="error-message">{error}</div>}
+    </>
+  );
+}
 
-      <label htmlFor="BillValue">💰 Bill Value</label>
-      <input
+function FormSplitBill({ selectedFriend, onSplitBill }) {
+  const [bill, setBill] = useState('');
+  const [paidByUser, setPaidByUser] = useState('');
+  const [whoIsPaying, setWhoIsPaying] = useState('user');
+  const [errors, setErrors] = useState({ bill: '', paidByUser: '' });
+  const paidByFriend = Number((Number(bill) - Number(paidByUser)).toFixed(2));
+
+  const validateInput = (value, relatedValue = null) => {
+    if (!/^\d*\.?\d{0,2}$/.test(value)) return 'Invalid format';
+    if (relatedValue !== null && Number(value) > Number(relatedValue))
+      return 'Cannot exceed total bill';
+    return '';
+  };
+
+  const handleBillChange = event => {
+    const value = event.target.value;
+    const error = validateInput(value);
+    setErrors({ ...errors, bill: error });
+    if (!error) setBill(value);
+  };
+
+  const handlePaidByUserChange = event => {
+    const value = event.target.value;
+    const error = validateInput(value, bill);
+    setErrors({ ...errors, paidByUser: error });
+    if (!error) setPaidByUser(value);
+  };
+
+  const handleSubmit = event => {
+    event.preventDefault();
+    const errorBill = validateInput(bill);
+    const errorPaidByUser = validateInput(paidByUser, bill);
+
+    if (errorBill || errorPaidByUser) {
+      setErrors({ bill: errorBill, paidByUser: errorPaidByUser });
+      return;
+    }
+
+    if (!bill || !paidByUser) return;
+    onSplitBill(whoIsPaying === 'user' ? paidByFriend : -paidByUser);
+  };
+
+  return (
+    <form
+      className="form-split-bill"
+      onSubmit={handleSubmit}>
+      <h2>Split a bill with {selectedFriend.name}</h2>
+
+      <InputField
+        label="💰 Bill Value"
+        value={bill}
+        onChange={handleBillChange}
+        error={errors.bill}
         id="BillValue"
-        type="text"
       />
 
-      <label htmlFor="YourExpense">🫵 Your Expense</label>
-      <input
+      <InputField
+        label="🫵 Your Expense"
+        value={paidByUser}
+        onChange={handlePaidByUserChange}
+        error={errors.paidByUser}
         id="YourExpense"
-        type="text"
       />
 
-      <label htmlFor="XExpense">🤑 X's Expense</label>
-      <input
-        id="XExpense"
-        type="text"
-        disabled
+      <InputField
+        label={`🤑 ${selectedFriend.name}'s Expense`}
+        value={bill && paidByUser ? paidByFriend : ''}
+        id={`${selectedFriend.name}Expense`}
+        disabled={true}
       />
 
       <label htmlFor="WhoPays">💳 Who is paying the bill</label>
-      <select id="WhoPays">
+      <select
+        id="WhoPays"
+        value={whoIsPaying}
+        onChange={event => setWhoIsPaying(event.target.value)}
+        aria-label="Who is paying the bill">
         <option value="user">You</option>
-        <option value="friend">X</option>
+        <option value="friend">{selectedFriend.name}</option>
       </select>
 
-      <Button>Split Bill</Button>
+      <Button type="submit">Split Bill</Button>
     </form>
   );
 }

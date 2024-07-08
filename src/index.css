@@ -112,19 +112,42 @@ form {
   font-size: 1.6rem;
   display: grid;
   align-items: center;
-  gap: 1.2rem;
+  gap: 2.5rem;
 
   background-color: var(--color-lightest);
   border-radius: 7px;
 }
 
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.error-message {
+  position: absolute;
+  color: #e03131;
+  font-size: 1.2rem;
+  right: 2rem;
+}
+
+.dollar-sign {
+  position: absolute;
+  margin-left: 10px;
+  font-weight: 400;
+}
+
+.dollar-input {
+  padding-left: 5px; /* Adjust based on the size of the dollar sign */
+  /* Additional styling for the input field */
+}
 .form-add-friend {
   grid-template-columns: max-content 1.5fr;
   margin-bottom: 1.6rem;
   padding: 1.2rem;
 }
 .form-split-bill {
-  grid-template-columns: 1fr 12rem;
+  grid-template-columns: 1fr max-content;
   padding: 3.2rem 4rem;
 }
 
@@ -148,6 +171,7 @@ select {
   border: 1px solid var(--color-light);
   border-radius: 4px;
   transition: 0.3s;
+  font-weight: 500;
 }
 
 input:focus,

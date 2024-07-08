@@ -45,11 +45,15 @@ Users should be able to:
 ### What I learned
 
 1. learned to create a static project first before adding state for dynamic rendering
-2. how to split a function into its own component using refactor option
-3. custom components are a blank slate and properties like onClick that come prepackaged need to be sent in as properties
-4. using spread operator instead of mutating original array
-5. direct state toggle vs functional update. Functional update is better when new state is derived from old state
-6. making a form, updating state, binding inputs to state variables, using a guard clause for falsy input values
+2. how to split a function into its own component using refactor
+3. Prop drilling and Lifting start properly as to avoid unnecessary and excessive drilling.
+4. custom components are a blank slate and properties like onClick that come prepackaged need to be sent in as properties
+5. using spread operator instead of mutating original array
+6. direct state toggle vs functional update. Functional update is better when new state is derived from old state
+7. making a form, updating state, binding inputs to state variables, using a guard clause for falsy input values
+8. using numeric values in input fields, formatting against non-numeric values, adding dollar sign inside input fields
+9. creating a better user experience with form validation and error messages
+10. Using the same button as a toggler and using optional chaining to prevent throwing an error when selection is null
 
 ### Continued development
 
