@@ -203,8 +203,8 @@ function InputField({ label, value, onChange, error, id, disabled = false }) {
           aria-label={label}
           aria-invalid={!!error}
         />
+        {error && <div className="error-message">{error}</div>}
       </div>
-      {error && <div className="error-message">{error}</div>}
     </>
   );
 }

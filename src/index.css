@@ -128,7 +128,8 @@ form {
   position: absolute;
   color: #e03131;
   font-size: 1.2rem;
-  right: 2rem;
+  left: 0rem;
+  bottom: -1.5rem;
 }
 
 .dollar-sign {
