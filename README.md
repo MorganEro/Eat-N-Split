@@ -24,15 +24,18 @@ Users should be able to:
 - Add friends to the friends list without mutating the original array
 - get a random id with crypto.randomUUID() method
 - conditionally render the addFriend Form
+- conditionally render the split the bill component when a friend is selected
+- calculate who owe's who based on the selected friend and who is paying
+- update the friends list based on the submitted calculations
 
 ### Screenshot
 
-![](/src/images/Screen%20Shot%202024-07-05%20at%2018.34.15.png)
+![](/src/Screen%20Shot%202024-07-08%20at%2019.14.43.png)
 
 ### Links
 
-- Solution URL: (https://github.com/MorganEro/Packing-List)
-- Live Site URL: (https://morganero.github.io/Packing-List/)
+- Solution URL: (https://github.com/MorganEro/Eat-N-Split)
+- Live Site URL: (morganero.github.io/Eat-N-Split/)
 
 ### Built with
 
