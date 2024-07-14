@@ -57,6 +57,7 @@ Users should be able to:
 8. using numeric values in input fields, formatting against non-numeric values, adding dollar sign inside input fields
 9. creating a better user experience with form validation and error messages
 10. Using the same button as a toggler and using optional chaining to prevent throwing an error when selection is null
+11. using key props to control the reset of state based on a selection. Without the key props for FormSplitBill, the state would not reset based on the selected friend, which means that all 3 friends would should the split bill state even as different friends ae clicked.
 
 ### Continued development
 
